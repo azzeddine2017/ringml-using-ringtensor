@@ -26,11 +26,11 @@ loader = new DataLoader(dataset, batch_size)
 nClasses = 18
 model = new Sequential
 
-model.add(new Dense(6, 32))   
+model.add(new Dense(6, 64))   
 model.add(new Sigmoid)        
-model.add(new Dense(32, 16))  
+model.add(new Dense(64, 32))  
 model.add(new Sigmoid)
-model.add(new Dense(16, nClasses)) 
+model.add(new Dense(32, nClasses)) 
 model.add(new Softmax)
 
 # 4. Print Summary
@@ -40,7 +40,7 @@ model.summary()
 criterion = new CrossEntropyLoss
 
 # Note: Adam usually needs lower LR than SGD. 0.01 is a good start.
-optimizer = new Adam(0.01) 
+optimizer = new Adam(0.005) 
 
 nEpochs   = 50
 

@@ -39,30 +39,33 @@ trainDataset = MakeTensorDataset(aTrain)
 testDataset  = MakeTensorDataset(aTest)
 
 batch_size = 16 # Small batch = More updates = Cool visualization
+
 trainLoader = new DataLoader(trainDataset, batch_size)
 testLoader  = new DataLoader(testDataset, batch_size)
 
 # 4. Build Model
 model = new Sequential
-model.add(new Dense(2, 16))
+model.add(new Dense(2, 64))
 model.add(new Tanh)
-model.add(new Dense(16, 3))
+model.add(new Dense(64, 32))
+model.add(new Tanh)
+model.add(new Dense(32, 3))
 model.add(new Softmax)
 
 model.summary()
-//sleep(1)
+
 
 # 5. Training
 criterion = new CrossEntropyLoss
 optimizer = new Adam(0.001) # Fast Learning Rate
-nEpochs   = 20
+nEpochs   = 50
 
 viz = new TrainingVisualizer(nEpochs, trainLoader.nBatches)
 
 for epoch = 1 to nEpochs
     model.train()
     epochLoss = 0
-    
+
     for b = 1 to trainLoader.nBatches
         batch = trainLoader.getBatch(b)
         inputs = batch[1]
@@ -78,7 +81,7 @@ for epoch = 1 to nEpochs
         for l in model.getLayers() optimizer.update(l) next
         
         # Slow down slightly so human eye can see the bar moving
-        # sleep(0.01) 
+        //sleep(0.01) 
         viz.update(epoch, b, loss, 0)
     next
     
@@ -111,6 +114,8 @@ for epoch = 1 to nEpochs
 next
 
 see nl + "Done! Look at those colors! 🎨" + nl
+
+model.saveWeights("Visual_test_model.rdata")
 
 # Helper to Convert Lists to Tensors
 func MakeTensorDataset aDataList

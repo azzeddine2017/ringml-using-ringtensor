@@ -48,22 +48,22 @@ testLoader   = new DataLoader(testDataset, batch_size)
 nClasses = 18
 model = new Sequential
 
-model.add(new Dense(6, 64))   
+model.add(new Dense(6, 128))   
 model.add(new Tanh)        
 model.add(new Dropout(0.2))
 
-model.add(new Dense(64, 32))  
+model.add(new Dense(128, 64))  
 model.add(new Tanh)
 model.add(new Dropout(0.2))
 
-model.add(new Dense(32, nClasses)) 
+model.add(new Dense(64, nClasses)) 
 model.add(new Softmax)
 
 model.summary()
 
 # 5. Training Setup
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.002) 
+optimizer = new Adam(0.005) 
 nEpochs   = 20
 
 # --- SETUP VISUALIZER ---
@@ -77,7 +77,8 @@ for epoch = 1 to nEpochs
     # --- Training ---
     model.train() 
     trainLoss = 0
-    
+    accuracy = 0
+
     for b = 1 to trainLoader.nBatches
         batch = trainLoader.getBatch(b) 
         inputs  = batch[1]
@@ -94,9 +95,6 @@ for epoch = 1 to nEpochs
         
         # --- UPDATE VISUALIZER (Every 5 batches to be smooth) ---
         if b % 5 = 0
-            # Calculate rough accuracy for display (optional, or just pass 0)
-            # Here we just pass 0 for batch acc to save speed, or calculate it if fast enough.
-            # Passing 0 for batch accuracy, focusing on Loss color.
             viz.update(epoch, b, loss, 0)
         ok
     next
@@ -132,7 +130,6 @@ for epoch = 1 to nEpochs
     next
     
     accuracy = (correct / total) * 100
-    # see "Epoch " + epoch  + "/" + nEpochs + " | Loss: " + avgTrainLoss + " | Val Acc: " + accuracy + "%" + nl
     
     # --- FINISH EPOCH VISUALIZATION ---
     viz.finishEpoch(epoch, avgTrainLoss, accuracy)

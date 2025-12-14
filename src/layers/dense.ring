@@ -19,7 +19,7 @@ class Dense from Layer
         nNeurons   = nOut
         
         # DEBUG INFO
-        # see ">> Init Dense (" + nInputSize + ", " + nNeurons + ")... " 
+        //see ">> Init Dense (" + nInputSize + ", " + nNeurons + ")... " 
         
         # 1. Weights Init
         oWeights = new Tensor(nInputSize, nNeurons)
@@ -37,18 +37,19 @@ class Dense from Layer
         next
         
         # DEBUG CHECK
-        # if countFilled != (nInputSize * nNeurons)
-        #    see "ERROR: Only filled " + countFilled + " items!" + nl
-        # else
-        #    see "OK (Filled " + countFilled + ")" + nl
-        # ok
+        /*if countFilled != (nInputSize * nNeurons)
+           see "ERROR: Only filled " + countFilled + " items!" + nl
+        else
+           see "OK (Filled " + countFilled + ")" + nl
+        ok*/
 
         # 2. Bias Init (Small Randoms)
         oBias = new Tensor(1, nNeurons)
-        for c = 1 to nNeurons
+        oBias.zeros()
+        /*for c = 1 to nNeurons
              val = (random(100) / 10000.0) 
              oBias.aData[1][c] = val
-        next
+        next*/
         
         # 3. Gradients Init
         oGradWeights = new Tensor(nInputSize, nNeurons)

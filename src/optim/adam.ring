@@ -12,15 +12,13 @@ class Adam
         nLR = nLearningRate
 
     func update oLayer
-        # Check trainability
+        # 1. Validation
         if hasAttribute(oLayer, "bTrainable") 
             if !oLayer.bTrainable return ok
         ok
-
-        # Check weights
         if !hasAttribute(oLayer, "oWeights") return ok
 
-        # --- Initialize State ---
+        # 2. State Initialization (Run once per layer)
         if !hasAttribute(oLayer, "adam_mw")
             # State for Weights
             addAttribute(oLayer, "adam_mw")
@@ -38,11 +36,11 @@ class Adam
             oLayer.adam_t = 0
         ok
 
-        # Increment Time Step
+        # 3. Time Step
         oLayer.adam_t++
         nT = oLayer.adam_t
 
-        # Update Weights (Manual Loop)
+        # 4. Updates (Optimized Calls)
         update_param_manual(
             oLayer.oWeights, 
             oLayer.oGradWeights, 
@@ -51,7 +49,6 @@ class Adam
             nT
         )
 
-        # Update Bias (Manual Loop)
         update_param_manual(
             oLayer.oBias, 
             oLayer.oGradBias, 
@@ -61,14 +58,18 @@ class Adam
         )
 
     func update_param_manual oParam, oGrad, oM, oV, nT
-        # Calculate corrections once
+        # Pre-calc corrections to save CPU
         correction1 = 1.0 - pow(nBeta1, nT)
         correction2 = 1.0 - pow(nBeta2, nT)
         
+        # Safety for very first step or precision errors
+        if correction1 = 0 correction1 = 0.00000001 ok
+        if correction2 = 0 correction2 = 0.00000001 ok
+
         nRows = oParam.nRows
         nCols = oParam.nCols
         
-        # Optimization: Direct access to lists
+        # Extract Lists (References)
         aW = oParam.aData
         aG = oGrad.aData
         aM = oM.aData
@@ -78,29 +79,35 @@ class Adam
             for c = 1 to nCols
                 g = aG[r][c]
                 
-                # 1. Update biased first moment estimate
-                # m = beta1 * m + (1 - beta1) * g
+                # --- Adam Logic ---
+                
+                # 1. Update Momentum (m)
+                # m = beta1 * m + (1-beta1) * g
                 aM[r][c] = (nBeta1 * aM[r][c]) + ((1.0 - nBeta1) * g)
                 
-                # 2. Update biased second raw moment estimate
-                # v = beta2 * v + (1 - beta2) * g^2
+                # 2. Update Velocity (v)
+                # v = beta2 * v + (1-beta2) * g^2
                 aV[r][c] = (nBeta2 * aV[r][c]) + ((1.0 - nBeta2) * (g * g))
                 
                 # 3. Bias Correction
                 m_hat = aM[r][c] / correction1
                 v_hat = aV[r][c] / correction2
                 
-                # 4. Update Parameter
-                # W = W - (lr * m_hat) / (sqrt(v_hat) + epsilon)
+                # 4. Calculate Step
+                # W = W - lr * m_hat / (sqrt(v_hat) + epsilon)
                 
-                # Safety against sqrt of negative (rare float error)
-                if v_hat < 0 v_hat = 0 ok
+                # Abs safety to prevent NaN from sqrt(-0.000...)
+                if v_hat < 0 v_hat = 0 ok 
                 
                 nDenom = sqrt(v_hat) + nEpsilon
                 nStep = (nLR * m_hat) / nDenom
                 
+                # 5. Apply Update
                 aW[r][c] -= nStep
             next
         next
-
-    
+        
+        # Force update list back to object (Just in case of reference loss)
+        oParam.aData = aW
+        oM.aData = aM
+        oV.aData = aV

@@ -8,7 +8,7 @@ class TrainingVisualizer
     nTotalBatches
     
     # Spinner animation frames
-    aSpinner = ["|", "/", "-", "\\"]
+    aSpinner = ["|", "/", "--", "\\"]
     nSpinIdx = 1
 
     # ASCII Brain Icon lines
@@ -24,7 +24,7 @@ class TrainingVisualizer
         
         # Initial Clear/Header
         cc_print(CC_FG_CYAN, "==========================================" + nl)
-        cc_print(CC_FG_CYAN, "      RingML Training Dashboard           " + nl)
+        cc_print(CC_FG_CYAN, "      RingML Training Dashboard       " + nl)
         cc_print(CC_FG_CYAN, "==========================================" + nl)
 
     func update nEpoch, nBatch, nLoss, nAcc
@@ -68,24 +68,38 @@ class TrainingVisualizer
         cc_print(CC_FG_CYAN, " Epoch " + nEpoch + "/" + nTotalEpochs + " ")
         
         # Print Progress Bar
-        cc_print(CC_FG_WHITE, cBar + " " + floor(nPercent) ) + "%"
+        cc_print(CC_FG_WHITE, cBar + " " + floor(nPercent) )
         
         # Print Metrics
         cc_print(CC_FG_WHITE, "| Loss: ")
         cc_print(nLossColor, "" + nLoss + " ")
         
         cc_print(CC_FG_WHITE, "| Accuracy: ")
-        cc_print(nAccColor, "" + nAcc ) + "%"
+        cc_print(nAccColor, "" + nAcc ) see " %"
         
         # No new line at the end to allow overwriting!
 
     func finishEpoch nEpoch, nAvgLoss, nValAcc
+        # Loss Color: Red (Bad) -> Yellow -> Green (Good < 1.0)
+        nLossColor = CC_FG_RED
+        if nAvgLoss < 2.0 nLossColor = CC_FG_YELLOW ok
+        if nAvgLoss < 1.0 nLossColor = CC_FG_GREEN ok
+
+        # Accuracy Color: Red -> Yellow -> Green (> 50%)
+        nAccColor = CC_FG_RED
+        if nValAcc > 20 nAccColor = CC_FG_YELLOW ok
+        if nValAcc > 50 nAccColor = CC_FG_GREEN ok
+
         # When epoch is done, we print a permanent summary line
         see char(13) + copy(" ", 80) + char(13) # Clear line
         
-        cc_print(CC_FG_GREEN, "[DONE] Epoch " + nEpoch + ": ")
-        cc_print(CC_FG_WHITE, "Avg Loss = " + nAvgLoss)
-        cc_print(CC_FG_WHITE, " | Val Accuracy = " + nValAcc ) + "%"
+        cc_print(CC_FG_GREEN, "[DONE]")
+        cc_print(CC_FG_YELLOW, " Epoch " + nEpoch + ": ")
+        cc_print(CC_FG_WHITE, "Avg Loss = ")
+        cc_print(nLossColor, "" + nAvgLoss)
+        cc_print(CC_FG_WHITE, " | ")
+        cc_print(CC_FG_WHITE, "Val Accuracy = ")
+        cc_print(nAccColor, "" + nValAcc ) see " %" 
         see nl 
         # Print a separator or Brain animation frame if desired
     
