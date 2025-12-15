@@ -1,15 +1,15 @@
 aPackageInfo = [
-	:name = "The RingML Package",
-	:description = "Our RingML package using the Ring programming language",
-	:folder = "ringml",
+	:name = "The RingML-using-ringtensor Package",
+	:description = "Our RingML-using-ringtensor package using the Ring programming language",
+	:folder = "ringml-using-ringtensor",
 	:developer = "Azzeddine Remmal",
 	:email = "azzeddine.remmal@gmail.com",
 	:license = "MIT License",
-	:version = "1.0.8",
+	:version = "1.0.0",
 	:ringversion = "1.24",
 	:versions = 	[
 		[
-			:version = "1.0.8",
+			:version = "1.0.0",
 			:branch = "master"
 		]
 	],
@@ -25,8 +25,8 @@ aPackageInfo = [
 			:providerusername = ""
 		],
 		[
-			:name = "ringfastpro",
-			:version = "1.0.8",
+			:name = "ringtensor",
+			:version = "1.0.0",
 			:providerusername = ""
 		]
 	],

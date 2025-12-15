@@ -13,7 +13,7 @@ func main
                  |___/               
 "
 	? "RingML - Machine Learning Library for Ring"
-	? "Version   : 1.0.7"
+	? "Version   : 1.0.0"
 	? "Developer : Azzeddine Remmal"
 	? "License   : MIT License"
 	? ""

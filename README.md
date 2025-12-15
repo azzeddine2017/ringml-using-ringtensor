@@ -1,51 +1,57 @@
 # 🧠 RingML: Deep Learning Library for Ring
 
-RingML is a modular, high-performance Deep Learning framework built from scratch in the Ring programming language. It leverages the FastPro C-extension to perform accelerated matrix operations, enabling the training of Neural Networks for tasks like regression, binary classification, and multi-class classification.
+RingML is a high-performance, object-oriented Deep Learning framework built for the **Ring programming language**. It is powered by **RingTensor**, a custom C-extension designed specifically to provide fast, double-precision matrix operations and fused optimizer kernels.
 
-The goal is to provide a PyTorch-like object-oriented API for Ring developers, adhering to Jacob's Law by offering a familiar and intuitive interface.
+The library offers a **PyTorch-like API**, adhering to *Jacob's Law* by providing a familiar and intuitive interface for building Neural Networks.
 
-**Current Version:** 1.0.7 (Stable - Hybrid Engine)
+**Current Version:** 1.0.0 (Stable - Powered by RingTensor)
 
-## 📚 Installation
+## 📦 Installation
+
+You can easily install the package via the Ring Package Manager:
 
 ```bash
-ringpm install ringml from Azzeddine2017
+ringpm install ringml-using-ringtensor from Azzeddine2017
 ```
+
+> **Note:** Ensure the `ring_tensor.dll` (Windows) or `libring_tensor.so` (Linux/macOS) is in your execution path.
 
 ## 🛠️ Tech Stack & Architecture
 
 - **Core Language:** Ring Programming Language (v1.24+)
-- **Acceleration:** FastPro Extension (C-based DLL/SO) for heavy lifting.
+- **Engine:** RingTensor Extension (Custom C-based DLL/SO).
 - **Architecture:** Modular OOP (Tensor, Layers, Model, Optim, Data).
-- **Math Engine:** Hybrid Mode.
-    - *Critical ops (Sub, MatMul, Transpose)* are implemented in optimized Ring loops to ensure precision and stability.
-    - *Heavy ops (Add, Random, Activations)* utilize C-level FastPro speed.
-- **Persistence:** Custom High-Precision Serializer (.rdata) preserving 15-18 decimal places.
+- **Math Backend:** Full C Acceleration.
 
-## 🚀 Key Features by Module
+Unlike previous versions that used slow loops for stability, **RingML** now uses the **RingTensor** C-extension for all critical operations (MatMul, Transpose, Element-wise Math, Activations).
 
-### Module 1: Core Engine (src/core/)
-- **Tensor Class:** Wraps math operations.
-- **Operations:** Matrix Multiplication, Transpose, Broadcasting, Scalar Math.
-- **Stability:** Implements Numerically Stable Softmax to prevent NaN during training.
+- **Fused Kernels:** Optimizers (Adam, SGD) calculate updates inside C in a single pass for maximum speed.
+- **Precision:** Full Double Precision (64-bit float) guaranteed across the pipeline.
 
-### Module 2: Neural Building Blocks (src/layers/)
-- **Dense:** Fully Connected Layer with smart weight initialization.
+## 🚀 Key Features
+
+### 1. Core Engine (`src/core/`)
+- **Tensor Class:** The mathematical heart of the library.
+- **RingTensor Integration:** Direct calls to C functions for `tensor_matmul`, `tensor_add`, `tensor_sigmoid`, etc.
+- **Stability:** Implements Numerically Stable Softmax (in C) to prevent NaN issues.
+
+### 2. Neural Building Blocks (`src/layers/`)
+- **Dense:** Fully Connected Layer with smart random weight initialization.
 - **Activations:** ReLU, Sigmoid, Tanh, Softmax.
-- **Regularization:** Dropout layer to prevent overfitting.
+- **Regularization:** Dropout layer (with C-accelerated mask generation) to prevent overfitting.
 
-### Module 3: Model & Optimization (src/model/, src/optim/)
-- **Sequential:** Stack layers linearly. Includes `summary()` to view architecture and parameter counts.
+### 3. Model & Optimization (`src/model/`, `src/optim/`)
+- **Sequential:** Stack layers linearly. Includes `model.summary()` to visualize architecture.
 - **Optimizers:**
-    - SGD (Stochastic Gradient Descent).
-    - Adam (Adaptive Moment Estimation) for fast convergence.
-- **Loss Functions:** MSELoss (Regression), CrossEntropyLoss (Classification).
-- **Modes:** Support for `train()` and `evaluate()` modes (essential for Dropout).
+  - **SGD** (Stochastic Gradient Descent).
+  - **Adam** (Adaptive Moment Estimation) - Implemented via Fused Kernel in C.
+- **Loss Functions:** `MSELoss` (Regression), `CrossEntropyLoss` (Classification).
+- **Modes:** Support for `train()` and `evaluate()` modes.
 
-### Module 4: Data Pipeline (src/data/)
-- **DataSplitter:** Utility to shuffle and split raw data into Training/Testing sets (e.g., 80/20 split).
+### 4. Data Pipeline (`src/data/`)
+- **DataSplitter:** Utility to shuffle and split raw data into Training/Testing sets.
 - **DataLoader:** Efficient Mini-Batch processing to handle large datasets without memory overflow.
-- **Lazy Loading:** Custom Dataset support.
+- **Lazy Loading:** Support for custom Datasets.
 
 ## ⚡ Quick Start Guide
 
@@ -53,7 +59,7 @@ ringpm install ringml from Azzeddine2017
 Use `DataSplitter` to handle raw CSV data and `DataLoader` for batching.
 
 ```ring
-load "src/ringml.ring"
+load "ringml.ring" # Or specific path inside the package
 load "stdlib.ring"
 
 # 1. Load Data
@@ -88,23 +94,25 @@ model.add(new Softmax)
 # View architecture
 model.summary()
 ```
-### 2.2 Freezing a layer
+
+### 3. Advanced: Freezing Layers (Transfer Learning)
+You can freeze specific layers to prevent them from updating during training.
+
 ```ring
-# freeze layer
 model = new Sequential
 l1 = new Dense(6, 32)
-l1.freeze()  # freeze first layer
+l1.freeze()  # <--- This layer's weights will NOT change
 model.add(l1)
 model.add(new Tanh)
-model.add(new Dropout(0.2))
 model.add(new Dense(32, 1))
 model.add(new Softmax)
 
-model.summary()
+model.summary() 
+# You will see "Non-trainable params" count increase.
 ```
 
-### 3. Training with Adam
-The training loop handles Forward pass, Backward pass (Backprop), and Optimization.
+### 4. Training with Adam
+The training loop handles Forward pass, Backward pass, and Optimization.
 
 ```ring
 criterion = new CrossEntropyLoss
@@ -136,27 +144,28 @@ for epoch = 1 to nEpochs
 next
 ```
 
-### 4. Saving
+### 5. Saving & Loading
 Switch to evaluation mode to disable Dropout, then save.
 
 ```ring
 model.evaluate() 
 model.saveWeights("mymodel.rdata")
 see "Model Saved." + nl
+
+# --- Loading ---
+model2 = new Sequential
+# ... define same structure ...
+model2.loadWeights("mymodel.rdata")
 ```
 
-## ✅ Development Progress (Changelog)
-**Status:** ✅ Completed & Verified
+## 🧪 Included Examples
 
-- [x] **T01:** Core Tensor Engine & Math Operations.
-- [x] **T02:** Layers (Dense, ReLU, Sigmoid, Tanh, Softmax, Dropout).
-- [x] **T03:** Model Management (Sequential, Summary, Save/Load).
-- [x] **T04:** Optimization (SGD, Adam) & Loss (MSE, CrossEntropy).
-- [x] **T05:** Data Pipeline (Dataset, DataLoader, DataSplitter).
-- [x] **T06:** Real-World Demos:
-    - XOR Problem (Binary Classification).
-    - Chess End-Game (18-Class Classification).
-    - MNIST (Computer Vision / Digit Recognition).
+- **xor_train.ring:** Binary Classification (Hello World).
+- **Chess_End_Game/:** A complete real-world project classifying chess game results (18 classes) from a CSV dataset.
+- **mnist_train.ring:** Computer Vision example for digit recognition.
 
 ## 📝 License
-Open Source. 
+
+Open Source under **MIT License**.
+
+**Author:** Azzeddine Remmal.

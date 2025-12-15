@@ -2,7 +2,7 @@
 # Description: Main entry point
 # Author: Azzeddine Remmal
 # Date: 2025-12-15
-# Version: 1.0.8
+# Version: 1.0.0
 # License: MIT License
 
 
@@ -25,4 +25,4 @@ load "optim/sgd.ring"
 load "optim/adam.ring"         
 
 func RingML_Info
-    see "RingML Library v1.0.8 - Adam Optimizer Added" + nl
+    see "RingML Library v1.0.0 - Adam Optimizer Added" + nl
