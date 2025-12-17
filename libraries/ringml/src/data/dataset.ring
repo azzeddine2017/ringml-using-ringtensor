@@ -4,7 +4,7 @@
 
 class Dataset
     func length 
-        raise("Method len() not implemented")
+        raise("Method length() not implemented")
     func getData itemIndex
         raise("Method getData() not implemented")
 

@@ -1,11 +1,8 @@
 # File: Styler.ring
 # Description: A helper class for styling console output with ANSI colors.
 # Author: Azzeddine Remmal
-# Date: 2025-12-15
-# Version: 1.1.0
-# License: MIT License
 
-load "stdlib.ring"
+
 
 # ============================================================================
 # Console Styler Example
@@ -144,9 +141,6 @@ class Styler
 	func bright_green(cStyle, cText)
 		see seeString(:BRIGHT_GREEN, cStyle, cText)			
 
-
-		
-				
 	# --------------------------------------------------------------------
 	# Private / Internal Methods
 	# --------------------------------------------------------------------

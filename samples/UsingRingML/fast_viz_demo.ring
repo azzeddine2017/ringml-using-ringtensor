@@ -3,7 +3,7 @@
 # Author: Azzeddine Remmal
 
 
-load "ringml.ring"
+load "../../libraries/ringml/src/ringml.ring"
 
 decimals(10)
 

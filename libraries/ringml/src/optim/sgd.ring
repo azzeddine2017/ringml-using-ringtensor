@@ -29,12 +29,6 @@ class SGD
             )
         ok
         
-    func variableExists oObj, cVar
-        aAttrs = attributes(oObj)
-        for cAttr in aAttrs
-            if lower(cAttr) = lower(cVar) return true ok
-        next
-        return false
     
     func hasAttribute oObj, cName
         return variableExists(oObj, cName)

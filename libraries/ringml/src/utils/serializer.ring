@@ -65,9 +65,4 @@ func List2Code_Pretty aInput, nLevel
     
     return "NULL"
 
-func hasAttribute oObj, cName
-        aAttrs = attributes(oObj)
-        for a in aAttrs
-            if lower(a) = lower(cName) return true ok
-        next
-        return false
+

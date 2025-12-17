@@ -3,10 +3,6 @@
 # Author: Azzeddine Remmal
 
 
-
-func Randomize(nSeed)
-    return Random(nSeed)
-
 class Tensor
     pData   = NULL  # C Pointer
     nRows   = 0     
