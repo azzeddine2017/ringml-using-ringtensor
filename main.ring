@@ -88,7 +88,7 @@ func printExample cPath, cDesc
 
 func RingMLInfo
 
- oStyl.costom(:BRIGHT_BLUE, :BOLD, "
+ oStyl.seeString(:YELLOW, :NONE, "
   _____  _             __  __ _      
  |  __ \(_)           |  \/  | |     
  | |__) |_ _ __   __ _| \  / | |     
