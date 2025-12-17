@@ -2,7 +2,7 @@
 # Description: Main entry point
 # Author: Azzeddine Remmal
 # Date: 2025-12-15
-# Version: 1.0.0
+# Version: 1.1.0
 # License: MIT License
 
 load "stdlib.ring"
@@ -18,7 +18,7 @@ func main
     
     # --- Metadata ---
     printMeta("Library",   "RingML - Machine Learning Library for Ring")
-    printMeta("Version",   "1.0.0")
+    printMeta("Version",   "1.1.0")
     printMeta("Developer", "Azzeddine Remmal")
     printMeta("License",   "MIT License")
     see nl
