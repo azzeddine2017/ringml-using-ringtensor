@@ -4,7 +4,7 @@ RingML is a high-performance, object-oriented Deep Learning framework built for 
 
 The library offers a PyTorch-like API, adhering to **Jacob's Law** by providing a familiar and intuitive interface for building Neural Networks.
 
-**Current Version:** 1.1.0 (Stable - Powered by RingTensor)
+**Current Version:** 1.1.1 (Stable - Powered by RingTensor)
 
 ## 📦 Installation
 

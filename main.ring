@@ -1,9 +1,7 @@
 # File: main.ring
 # Description: Main entry point
 # Author: Azzeddine Remmal
-# Date: 2025-12-15
-# Version: 1.1.0
-# License: MIT License
+
 
 load "stdlib.ring"
 load "ringml.ring"
@@ -17,7 +15,7 @@ func main
     
     # --- Metadata ---
     printMeta("Library",   "RingML - Machine Learning Library for Ring")
-    printMeta("Version",   "1.1.0")
+    printMeta("Version",   "1.1.1")
     printMeta("Developer", "Azzeddine Remmal")
     printMeta("License",   "MIT License")
     see nl
@@ -125,7 +123,7 @@ func RingMLInfo
 	
 	banner[:tEmptyLine3] = colorText([:text = "│                                               │", :color = :BRIGHT_BLUE])
 	
-	versionStr = "Version 1.1.0"
+	versionStr = "Version 1.1.1"
 	versionPad = floor((47 - len(versionStr)) / 2)
 	banner[:versionLine] = colorText([:text = "│" + space(versionPad), :color = :BRIGHT_BLUE]) + colorText([:text = versionStr, :color = :YELLOW, :style = :BOLD]) + colorText([:text = space(47-versionPad-len(versionStr)) + "│", :color = :BRIGHT_BLUE])
 	

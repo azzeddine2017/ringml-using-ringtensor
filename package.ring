@@ -5,11 +5,11 @@ aPackageInfo = [
 	:developer = "Azzeddine Remmal",
 	:email = "azzeddine.remmal@gmail.com",
 	:license = "MIT License",
-	:version = "1.1.0",
+	:version = "1.1.1",
 	:ringversion = "1.24",
 	:versions = 	[
 		[
-			:version = "1.1.0",
+			:version = "1.1.1",
 			:branch = "master"
 		]
 	],
@@ -43,10 +43,6 @@ aPackageInfo = [
 	:ringfolderfiles = 	[
 		"bin/load/ringml.ring",
 		"libraries/ringml/project_documents/Performance Optimization Report.txt",
-		"libraries/ringml/project_documents/RingML/FastPro_Fix_Roadmap.md",
-		"libraries/ringml/project_documents/RingML/FastPro_Technical_Report.md",
-		"libraries/ringml/project_documents/RingML/README.md",
-		"libraries/ringml/project_documents/RingML/uml/class_diagram.md",
 		"libraries/ringml/README.md",
 		"libraries/ringml/src/core/tensor.ring",
 		"libraries/ringml/src/data/dataset.ring",
@@ -63,6 +59,7 @@ aPackageInfo = [
 		"libraries/ringml/src/optim/adam.ring",
 		"libraries/ringml/src/optim/sgd.ring",
 		"libraries/ringml/src/ringml.ring",
+		"libraries/ringml/src/utils/functions.ring",
 		"libraries/ringml/src/utils/serializer.ring",
 		"libraries/ringml/src/utils/Styler.ring",
 		"libraries/ringml/src/utils/visualizer.ring",

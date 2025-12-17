@@ -1,6 +1,6 @@
 # File: src/data/universaldataset.ring
 # Description: Professional Data Manager (Load, Clean, Shuffle, Split)
-# Author: Code Gear-1
+# Author: Azzeddine Remmal
 
 
 class UniversalDataset
