@@ -80,17 +80,3 @@ finalPreds.print()
 see "Expected Targets:" + nl
 targets.print()
 
-# --- Helper Function ---
-func listToTensor aList
-    nRows = len(aList)
-    if nRows = 0 return new Tensor(1,1) ok
-    nCols = len(aList[1])
-    
-    oTen = new Tensor(nRows, nCols)
-    
-    for r = 1 to nRows
-        for c = 1 to nCols
-            oTen.setVal(r, c, aList[r][c])
-        next
-    next
-    return oTen
