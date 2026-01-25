@@ -36,7 +36,7 @@ class Dropout from Layer
         # Mask needs to be generated.
         
         # Let's use a dedicated generation method on the mask tensor
-        oMask.apply_dropout(nDropRate) # This fills oMask with 0s and Scales
+        oMask.applyDropout(nDropRate) # This fills oMask with 0s and Scales
         
         # 3. Apply Mask to Input (Element-wise Mul)
         # We copy input first to avoid modifying original data reference

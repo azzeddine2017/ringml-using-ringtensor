@@ -16,9 +16,9 @@ class TrainingVisualizer
         nTotalBatches = nBatches
         
         # Initial Clear/Header
-        ? oStyl.CYAN(:BOLD,"==========================================")
-        ? oStyl.WHITE(:BOLD," " + RingMLVersion() + " Training Dashboard         ")
-        ? oStyl.CYAN(:BOLD,"==========================================")
+        ? oStyl.cyan(:BOLD,"==========================================")
+        ? oStyl.white(:BOLD," " + RingMLVersion() + " Training Dashboard         ")
+        ? oStyl.cyan(:BOLD,"==========================================")
 
     func update nEpoch, nBatch, nLoss, nAcc
         # 1. Calculate Progress

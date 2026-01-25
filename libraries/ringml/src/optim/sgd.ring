@@ -1,41 +1,33 @@
 # File: src/optim/sgd.ring
-# Description: Stochastic Gradient Descent Optimizer (Fixed)
+# Description: Stochastic Gradient Descent Optimizer
 # Author: Azzeddine Remmal
 
 class SGD
-    nLearningRate = 0.01
+    lr = 0.01
+    nLearningRate = 0.01 # Legacy alias
 
     func init nLR
+        lr = nLR
         nLearningRate = nLR
+    ok
 
     func update oLayer
         if hasAttribute(oLayer, "bTrainable") 
             if !oLayer.bTrainable return ok
         ok
         
-        if variableExists(oLayer, "oWeights")
+        if hasAttribute(oLayer, "oWeights")
             tensor_update_sgd(
                 oLayer.oWeights.pData, 
                 oLayer.oGradWeights.pData, 
-                nLearningRate
+                lr
             )
         ok
 
-        if variableExists(oLayer, "oBias")
+        if hasAttribute(oLayer, "oBias")
             tensor_update_sgd(
                 oLayer.oBias.pData, 
                 oLayer.oGradBias.pData, 
-                nLearningRate
+                lr
             )
         ok
-        
-    func variableExists oObj, cVar
-        aAttrs = attributes(oObj)
-        for cAttr in aAttrs
-            if lower(cAttr) = lower(cVar) return true ok
-        next
-        return false
-    
-    func hasAttribute oObj, cName
-        return variableExists(oObj, cName)
-    

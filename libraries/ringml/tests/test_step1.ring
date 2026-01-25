@@ -1,3 +1,7 @@
+# Project: RingML
+# File: tests/test_step1.ring
+# Description: Step 1: Core Tensor Operations (Pointer Mode)
+# Author: Azzeddine Remmal
 
 load "ringml.ring"
 

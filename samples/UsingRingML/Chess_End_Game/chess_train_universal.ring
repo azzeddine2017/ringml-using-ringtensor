@@ -45,7 +45,7 @@ model.summary()
 
 # D. Setup Training
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.005) 
+optimizer = new Adam(0.0001) 
 nEpochs   = 50
 
 # E. Visualization

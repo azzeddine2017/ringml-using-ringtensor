@@ -14,7 +14,7 @@ if isMainSourceFile() {
 		Info("Info")
 		Success("Success" + "%")
 		Warning("Warning")
-		? Error("Error")
+		Error("Error")
 
 		# red color
 		red(:BOLD, "Custom Usage")
@@ -76,70 +76,70 @@ class Styler
 	# --------------------------------------------------------------------
 
 	func Error(cMessage)
-		see seeString(:BRIGHT_RED, :BOLD, "Error: " + cMessage)
+		seeString(:BRIGHT_RED, :BOLD, "[ERROR] :" + cMessage)
 
 	func Success(cMessage)
-		see seeString(:BRIGHT_GREEN, :BOLD, "Success: " + cMessage)
+		seeString(:BRIGHT_GREEN, :BOLD, "[SUCCESS] :" + cMessage)
 
 	func Warning(cMessage)
-		see seeString(:YELLOW, :NONE, "Warning: " + cMessage)
+		seeString(:YELLOW, :BOLD, "[WARNING] :" + cMessage)
 
 	func Info(cMessage)
-		see seeString(:CYAN, :NONE, "Info: " + cMessage)
+		seeString(:CYAN, :BOLD, "[INFO] :" + cMessage)
 
 	# --------------------------------------------------------------------
-	# Helper Methods (	Colors)
+	# Helper Methods (Colors)
 	# --------------------------------------------------------------------
 	#  functions named colors
 		
 
 	func red(cStyle, cText)
-		see seeString(:BRIGHT_RED, cStyle, cText)
+		seeString(:BRIGHT_RED, cStyle, cText)
 
 	func green(cStyle, cText)
-		see seeString(:BRIGHT_GREEN, cStyle, cText)
+		seeString(:BRIGHT_GREEN, cStyle, cText)
 
 	func yellow(cStyle, cText)
-		see seeString(:YELLOW, cStyle, cText)
+		seeString(:YELLOW, cStyle, cText)
 
 	func cyan(cStyle, cText)
-		see seeString(:CYAN, cStyle, cText)
+		seeString(:CYAN, cStyle, cText)
 
 	func magenta(cStyle, cText)
-		see seeString(:MAGENTA, cStyle, cText)
+		seeString(:MAGENTA, cStyle, cText)
 
 	func blue(cStyle, cText)
-		see seeString(:BLUE, cStyle, cText)
+		seeString(:BLUE, cStyle, cText)
 
 	func white(cStyle, cText)
-		see seeString(:WHITE, cStyle, cText)
+		seeString(:WHITE, cStyle, cText)
 
 	func black(cStyle, cText)
-		see seeString(:BLACK, cStyle, cText)
+		seeString(:BLACK, cStyle, cText)
 		
 	func bright_blue(cStyle, cText)
-		see seeString(:BRIGHT_BLUE, cStyle, cText)	
+		seeString(:BRIGHT_BLUE, cStyle, cText)	
 	
 	func bright_magenta(cStyle, cText)
-		see seeString(:BRIGHT_MAGENTA, cStyle, cText)	
+		seeString(:BRIGHT_MAGENTA, cStyle, cText)	
 	
 	func bright_cyan(cStyle, cText)
-		see seeString(:BRIGHT_CYAN, cStyle, cText)	
+		seeString(:BRIGHT_CYAN, cStyle, cText)	
 	
 	func bright_white(cStyle, cText)
-		see seeString(:BRIGHT_WHITE, cStyle, cText)		
+		seeString(:BRIGHT_WHITE, cStyle, cText)		
 	
 	func bright_black(cStyle, cText)
-		see seeString(:BRIGHT_BLACK, cStyle, cText)	
+		seeString(:BRIGHT_BLACK, cStyle, cText)	
 
 	func bright_yellow(cStyle, cText)
-		see seeString(:BRIGHT_YELLOW, cStyle, cText)	
+		seeString(:BRIGHT_YELLOW, cStyle, cText)	
 
 	func bright_red(cStyle, cText)
-		see seeString(:BRIGHT_RED, cStyle, cText)		
+		seeString(:BRIGHT_RED, cStyle, cText)		
 
 	func bright_green(cStyle, cText)
-		see seeString(:BRIGHT_GREEN, cStyle, cText)			
+		seeString(:BRIGHT_GREEN, cStyle, cText)			
 
 	# --------------------------------------------------------------------
 	# Private / Internal Methods

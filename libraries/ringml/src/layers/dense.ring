@@ -2,99 +2,88 @@
 # Description: Fully Connected (Dense) Layer with Forward & Backward
 # Author: Azzeddine Remmal
 
-
-
 class Dense from Layer
+
+    # Properties
     oWeights        
     oBias           
-    oInput          
     
     oGradWeights    
     oGradBias       
 
-    # Cache for optimization (Reuse pointers)
-    oOutputCache            = NULL
-    oInputTransposedCache   = NULL
-    oWeightsTransposedCache = NULL
-
+    oInputCache
     nInputSize
     nNeurons
+
+    bTrainable = true
+
+    cName = "Dense"
 
     func init nIn, nOut
         nInputSize = nIn
         nNeurons   = nOut
         
-        # 1. Weights Init
+        # 1. Weights
         oWeights = new Tensor(nInputSize, nNeurons)
+        oWeights.random() 
+        oWeights.subScalar(0.5) 
         
-        # Manual Random Init (-1 to 1) using setVal
-        for r = 1 to nInputSize
-            for c = 1 to nNeurons
-                val = (random(2000) / 1000.0) - 1.0
-                oWeights.setVal(r, c, val)
-            next
-        next
-
-        # 2. Bias Init (Small Randoms)
+        # He Uniform
+        nLimit = sqrt(6.0 / nIn)
+        nFactor = 2.0 * nLimit
+        oWeights.scalarMul(nFactor) 
+        
+        # 2. Bias
         oBias = new Tensor(1, nNeurons)
-        for c = 1 to nNeurons
-             val = (random(100) / 10000.0) 
-             if val = 0 val = 0.0001 ok
-             oBias.setVal(1, c, val)
-        next
+        oBias.zeros()
         
-        # 3. Gradients Init
+        # 3. Gradients
         oGradWeights = new Tensor(nInputSize, nNeurons)
         oGradWeights.zeros()
+        
         oGradBias    = new Tensor(1, nNeurons)
         oGradBias.zeros()
+
+    func forward oInput
+        oInputCache = oInput
         
-    func forward oInputTensor
-        oInput = oInputTensor
-        
-        # 1. MatMul (C-Level Speed)
-        # Result is a new Tensor (managed by C)
+        # MatMul
         oOutput = oInput.matmul(oWeights)
         
-        # 2. Add Bias (Broadcasting)
-        # Since we don't have "Broadcast Add" in C yet, we use manual loop
-        # using getVal/setVal. It is O(N), so it is fast enough.
-        
-        for r = 1 to oOutput.nRows
-            for c = 1 to oOutput.nCols
-                # val = old + bias
-                val = oOutput.getVal(r, c) + oBias.getVal(1, c)
-                oOutput.setVal(r, c, val)
-            next
-        next
+        # Add Bias (Broadcast Row)
+        return oOutput.addRowVec(oBias)
         
         return oOutput
 
     func backward oGradOutput
-        # 1. Gradients for Weights
-        # dW = Input^T * GradOutput
+        # 1. Weights Gradient: Input^T * Grad
+        oInputT = oInputCache.transpose()
+        oGw = oInputT.matmul(oGradOutput)
+        oGradWeights.add(oGw)
         
-        if ISNULL(oInputTransposedCache) or oInputTransposedCache.nRows != oInput.nCols
-             oInputTransposedCache = oInput.transpose()
-        else
-             # Update existing cache (Optimization needed in Tensor later)
-             # For now, just create new transpose
-             oInputTransposedCache = oInput.transpose()
-        ok
+        # 2. Bias Gradient: Sum(Grad, Axis=0)
+        oGb = oGradOutput.sum(0)
+        oGradBias.add(oGb)
         
-        # We calculate dW directly into oGradWeights
-        # Note: Tensor.matmul currently returns NEW tensor.
-        # Ideally, we should pass oGradWeights to matmul to avoid allocation.
-        # But to keep API simple, we assign the result.
-        oGradWeights = oInputTransposedCache.matmul(oGradOutput)
+        # 3. Input Gradient: Grad * Weights^T
+        oWeightsT = oWeights.transpose()
+        oGradInput = oGradOutput.matmul(oWeightsT)
         
-        # 2. Gradients for Bias
-        # dB = Sum(GradOutput, Axis=0)
-        oGradBias = oGradOutput.sum(0) 
+        return oGradInput
+
+    func freeze
+        bTrainable = false
+
+    func unfreeze
+        bTrainable = true
+
+    func updateWeights oOptimizer
+        if !bTrainable return ok 
+        oOptimizer.updateTensor(oWeights, oGradWeights)
+        oOptimizer.updateTensor(oBias, oGradBias)
         
-        # 3. Gradient for Input
-        # dInput = GradOutput * Weights^T
-        oWeightsTransposedCache = oWeights.transpose()
-        dInput = oGradOutput.matmul(oWeightsTransposedCache)
-        
-        return dInput
+        oGradWeights.fill(0)
+        oGradBias.fill(0)
+
+    func getParams
+        return [ [oWeights, oGradWeights], [oBias, oGradBias] ]

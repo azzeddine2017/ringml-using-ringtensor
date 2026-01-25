@@ -1,3 +1,8 @@
+# Project: RingML
+# File: tests/test_step2.ring
+# Description: Step 2: Layers Forward Pass
+# Author: Azzeddine Remmal
+
 load "ringml.ring"
 
 decimals(4)

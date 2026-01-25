@@ -9,8 +9,7 @@ class Softmax from Layer
 
     func forward oInputTensor
         oOutput = oInputTensor.copy()
-        oOutput.softmax()
-        return oOutput
+        return oOutput.softmax()
 
     func backward oGradOutput
         # In Deep Learning, Softmax is usually combined with CrossEntropy.

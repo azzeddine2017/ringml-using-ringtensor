@@ -1,3 +1,8 @@
+# Project: RingML
+# File: tests/test_step3.ring
+# Description: Step 3: Full Training Step (Backprop)
+# Author: Azzeddine Remmal
+
 load "ringml.ring"
 
 decimals(4)

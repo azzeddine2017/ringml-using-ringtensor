@@ -4,6 +4,9 @@
 
 
 class MSELoss
+
+    func init
+        return self
     
     func forward oPred, oTarget
         oDiff = oPred.copy()
@@ -21,9 +24,18 @@ class MSELoss
         # see "   [MSE Debug] Diff (Pred - Target) [Should be negative]: " 
         # oGrad.print()
         
-        oGrad.scalar_mul(2.0)
+        oGrad.scalarMul(2.0)
         
         nTotal = oPred.nRows * oPred.nCols
-        oGrad.scalar_mul(1.0 / nTotal)
+        oGrad.scalarMul(1.0 / nTotal)
         
         return oGrad
+
+    func calculate oPred, oTarget
+        if oPred.bGraphMode
+            return oPred.returnGraphNode(OP_MSE, oPred, oTarget, 1, 1)
+        ok
+        oDiff = oPred.copy()
+        oDiff.sub(oTarget)
+        oDiff.square()
+        return oDiff.mean()

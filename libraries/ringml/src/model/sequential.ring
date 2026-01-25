@@ -5,16 +5,31 @@
 class Sequential
     aLayers = []
 
+    func init
+        return self
+
     func add oLayer
         aLayers + oLayer
         return self
 
     func forward oInput
         oCurrent = oInput
+        nBatch = oInput.nBatch
+        if nBatch = 0 nBatch = 1 ok
+        nSeq   = oInput.nRows / nBatch
         for oLayer in aLayers
-            oCurrent = oLayer.forward(oCurrent)
+            if classname(oLayer) = "multiheadattention"
+                oCurrent = oLayer.forward(oCurrent, nBatch, nSeq)
+            else
+                oCurrent = oLayer.forward(oCurrent)
+            ok
         next
         return oCurrent
+
+    func compile oInputTemplate
+        oInputTemplate.setGraphMode(true)
+        oOutput = forward(oInputTemplate)
+        return oOutput # Returns the output virtual tensor (Graph Node)
 
     func backward oGradOutput
         oCurrentGrad = oGradOutput
@@ -70,7 +85,17 @@ class Sequential
         next
         see "Done." + nl
 
-    
+    func getParams
+        aAll = []
+        for oLayer in aLayers
+            if isMethod(oLayer, "getParams")
+                aLayerParams = oLayer.getParams()
+                for aPair in aLayerParams
+                    aAll + aPair
+                next
+            ok
+        next
+        return aAll
 
 	 # --- Model Summary (Colorful Version) ---
 

@@ -12,8 +12,10 @@ class UniversalDataset
     # Configuration
     cFilePath   = ""
     nTestRatio  = 0.2
-    bShuffle    = true
+    bShuffle    = false
     bHasHeader  = false
+    bSplit      = false
+    bDesply     = false
     
     # State
     nSamples    = 0
@@ -25,10 +27,10 @@ class UniversalDataset
         if !fexists(cFilePath) 
             raise("Error: File not found -> " + cFilePath)
         ok
-
+       
     # --- Configuration Methods (Builder Pattern) ---
     
-    func setSplit nRatio
+    func setRatio nRatio
         nTestRatio = nRatio
         return self
         
@@ -40,10 +42,19 @@ class UniversalDataset
         bHasHeader = bStatus
         return self
 
+    func setSplit bStatus
+        bSplit = bStatus
+        return self
+    
     # --- Core Loading Logic ---
 
     func loadData
-        see "Loading dataset: " + cFilePath + "..." + nl
+        if bDesply 
+            oStyl.cyan(:NONE, "Loading dataset: ") 
+            oStyl.green(:NONE, cFilePath)
+            oStyl.cyan(:NONE, " ..."+ nl)
+        ok
+        
         t1 = clock()
         
         # 1. Read File Content (Fast C-Level Read)
@@ -54,6 +65,8 @@ class UniversalDataset
             aRawData = CSV2List(cContent)
         elseif right(cFilePath, 5) = ".json"
             aRawData = JSON2List(cContent)
+        elseif right(cFilePath, 4) = ".txt"
+            aRawData = str2List(cContent)
         else
             raise("Unsupported file format. Please use .csv or .json")
         ok
@@ -68,15 +81,64 @@ class UniversalDataset
         ok
         
         nSamples = len(aRawData)
-        see "Loaded " + nSamples + " samples in " + ((clock()-t1)/clockspersecond()) + "s." + nl
-        
+        if bDesply 
+            oStyl.cyan(:NONE, "Loaded " ) 
+            oStyl.green(:NONE, nSamples ) 
+            oStyl.cyan(:NONE, " samples in " )
+            oStyl.green(:NONE, "" + ((clock()-t1)/clockspersecond()))
+            oStyl.cyan(:NONE, "s."+ nl)
+        ok
+            
         # 4. Perform Split
-        processSplit()
+        if bSplit 
+            processSplit()
+        else
+            aTrainData = aRawData
+            aTestData  = []
+        ok
         
         return self
 
+    # Function to sort data by length (shortest first)
+    func sortDataByLength
+        ? info("    Sorting Dataset by Length (Smart Batching Strategy)...")
+        
+        # 1. Create a temporary list [length, original line]
+        aTemp = []
+        for i=1 to len(aTrainData)
+            cLine = aTrainData[i]
+            # the length of the line
+            nLen = len(cLine) 
+            aTemp + [nLen, cLine]
+        next
+        
+        # 2. sort by length
+        aTemp = sort(aTemp, 1)
+        
+        # 3. update the train data
+        aTrainData = []
+        for item in aTemp
+            aTrainData + item[2] # the original line
+        next
+        
+        if bDesply
+            ? oStyl.cyan(:BOLD, "  Dataset Sorted. Shortest samples come first.")
+            oStyl.cyan(:BOLD, "first sample: (")
+            oStyl.green(:BOLD, aTrainData[1])
+            ? oStyl.cyan(:BOLD, ")")
+            oStyl.cyan(:BOLD, "last sample: (")
+            oStyl.green(:BOLD, aTrainData[len(aTrainData)])
+            ? oStyl.cyan(:BOLD, ")")
+        ok  
+    
     func processSplit
-        see "Processing Split (" + ((1-nTestRatio)*100) + "/" + (nTestRatio*100) + ")..." + nl
+        if bDesply
+            oStyl.cyan(:NONE, "Processing Split ( ")
+            oStyl.green(:NONE, "" + ((1-nTestRatio)*100))
+            oStyl.cyan(:NONE, " / ") 
+            oStyl.green(:NONE, "" + (nTestRatio*100)) 
+            oStyl.cyan(:NONE, " ) ..."+ nl)
+        ok
         
         splitter = new DataSplitter
         sets = splitter.splitData(aRawData, nTestRatio, bShuffle)
@@ -89,8 +151,12 @@ class UniversalDataset
         aRawData = []
         callgc()
         
-        see "Train Size: " + len(aTrainData) + nl
-        see "Test Size:  " + len(aTestData) + nl
+        if bDesply
+            oStyl.cyan(:NONE, "Train Size: ")
+            oStyl.green(:NONE, "" + len(aTrainData))
+            oStyl.cyan(:NONE, "Test Size:  ")
+            oStyl.green(:NONE, "" + len(aTestData) + nl)
+        ok       
 
     # --- Abstract Methods (To be overridden by user) ---
     

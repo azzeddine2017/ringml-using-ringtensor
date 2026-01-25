@@ -5,6 +5,10 @@
 load "ringml.ring"             
 load "mnist_dataset.ring"
 
+
+see "num cores :" + tensor_get_cores()
+tensor_set_threads(2)
+
 decimals(8)
 
 see "=== RingML MNIST Digit Recognition (Universal Loader) ===" + nl
@@ -45,13 +49,13 @@ model.add(new Dropout(0.2))
 
 # Output Layer
 model.add(new Dense(32, 10)) 
-model.add(new Softmax)
+//model.add(new Softmax)
 
 model.summary()
 
 # 4. Training Setup
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.005) # Adam
+optimizer = new Adam(0.005,0.0001) # Adam
 nEpochs   = 50
 
 # --- SETUP VISUALIZER ---

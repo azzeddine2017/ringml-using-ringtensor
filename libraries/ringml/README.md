@@ -1,60 +1,44 @@
-# 🧠 RingML: Deep Learning Library for Ring
+# 🧠 RingML: Deep Learning & Transformers for Ring
 
-RingML is a high-performance, object-oriented Deep Learning framework built for the Ring programming language. It is powered by **RingTensor**, a custom C-extension designed specifically to provide fast, double-precision matrix operations and fused optimizer kernels.
+**RingML** is a high-performance, object-oriented Deep Learning framework built for the Ring programming language. It is powered by **RingTensor**, a custom C-extension designed to provide fast, double-precision matrix operations, fused optimizer kernels, and **Flash Attention** mechanisms.
 
-The library offers a PyTorch-like API, adhering to **Jacob's Law** by providing a familiar and intuitive interface for building Neural Networks.
+The library offers a PyTorch-like API, adhering to **Jacob's Law** by providing a familiar interface. It has evolved from simple MLPs to supporting state-of-the-art **Transformer Architectures (GPT/BERT)**.
 
-**Current Version:** 1.1.0 (Stable - Powered by RingTensor)
+**Current Version:** 1.2.0 
 
 ## 📦 Installation
-
-You can easily install the package via the Ring Package Manager:
 
 ```bash
 ringpm install ringml-using-ringtensor from Azzeddine2017
 ```
-
-> **Note:** Ensure the `ring_tensor.dll` (Windows) or `libring_tensor.so` (Linux/macOS) is in your execution path.
+> **Requirement:** Ensure `ring_tensor.dll` (Windows) or `libring_tensor.so` (Linux/macOS) is in your execution path.
 
 ## 🛠️ Tech Stack & Architecture
 
-- **Core Language:** Ring Programming Language (v1.24+)
-- **Engine:** RingTensor Extension (Custom C-based DLL/SO).
-- **Architecture:** Modular OOP (Tensor, Layers, Model, Optim, Data).
-- **Math Backend:** Full C Acceleration.
+- **Core Language:** Ring (v1.25+)
+- **Engine:** RingTensor Extension (C-based Zero-Copy Engine).
+- **Execution Modes:**
+    - **Eager:** Immediate execution (Standard).
+    - **Graph Mode:** JIT-compiled computation graph for zero-latency training.
+- **Hardware Acceleration:**
+    - **CPU:** Multi-Core OpenMP acceleration.
+    - **GPU:** OpenCL support (Intel HD, NVIDIA, AMD) via Hybrid Dispatcher.
+- **Tensors:** Supports up to 4 Dimensions (Batch, Heads, Sequence, Dimension).
 
-Unlike previous versions that used slow loops for stability, RingML now uses the **RingTensor C-extension** for all critical operations (MatMul, Transpose, Element-wise Math, Activations).
+### Why RingML?
+- **Speed:** Critical operations (MatMul, Softmax, Attention, LayerNorm, GELU) are executed in optimized C kernels.
+- **Memory Efficiency:** Uses Memory-Resident Managed Pointers. No data marshalling overhead.
+- **Fused Kernels:** Optimizers (Adam, SGD) update weights directly in C memory.
+- **Production Ready:** Includes Binary Serialization (Save/Load) and Quantization (FP32).
 
-- **Fused Kernels:** Optimizers (Adam, SGD) calculate updates inside C in a single pass for maximum speed.
-- **Precision:** Full Double Precision (64-bit float) guaranteed across the pipeline.
+---
 
-## 🚀 Key Features
+## 📊 Legacy Example: Simple MLP (Classic Mode)
 
-### 1. Core Engine (`src/core/`)
-- **Tensor Class:** The mathematical heart of the library.
-- **RingTensor Integration:** Direct calls to C functions for `tensor_matmul`, `tensor_add`, `tensor_sigmoid`, etc.
-- **Stability:** Implements Numerically Stable Softmax (in C) to prevent NaN issues.
+For standard classification tasks (like XOR or MNIST), the Sequential API remains the perfect tool:
 
-### 2. Neural Building Blocks (`src/layers/`)
-- **Dense:** Fully Connected Layer with smart random weight initialization.
-- **Activations:** ReLU, Sigmoid, Tanh, Softmax.
-- **Regularization:** Dropout layer (with C-accelerated mask generation) to prevent overfitting.
-
-### 3. Model & Optimization (`src/model/`, `src/optim/`)
-- **Sequential:** Stack layers linearly. Includes `model.summary()` to visualize architecture.
-- **Optimizers:** SGD, Adam (Adaptive Moment Estimation).
-- **Loss Functions:** MSELoss (Regression), CrossEntropyLoss (Classification).
-- **Modes:** Support for `train()` and `evaluate()` modes.
-
-### 4. Data Pipeline (`src/data/`)
-- **UniversalDataset:** An all-in-one class that automates file loading (CSV/JSON), cleaning, shuffling, splitting, and memory management.
-- **DataSplitter:** Utility to shuffle and split raw data manually.
-- **DataLoader:** Efficient Mini-Batch processing.
-
-## ⚡ Quick Start Guide
-
-### 1. Data Preparation (The Professional Way)
-Instead of handling raw lists manually, use `UniversalDataset` to handle loading, cleaning, shuffling, and splitting in one go.
+### 1. Data Preparation
+Using `UniversalDataset` to handle CSV loading and splitting.
 
 ```ring
 load "ringml.ring" 
@@ -75,10 +59,10 @@ class MyDataset from UniversalDataset
 
 # Load and Prepare
 data = new MyDataset("data.csv")
-data.setHeader(true)        # Skip first row
-data.setShuffle(true)       # Randomize
-data.setSplit(0.2)          # 20% for Testing
-data.loadData()             # Execute
+data.setHeader(true)        
+data.setShuffle(true)       
+data.setSplit(0.2)          
+data.loadData()             
 
 # Create Loaders
 trainLoader = new DataLoader(data.getTrainDataset(), 32)
@@ -129,7 +113,12 @@ for epoch = 1 to nEpochs
         # Backward & Update
         grad = criterion.backward(preds, targets)
         model.backward(grad)
-        for layer in model.getLayers() optimizer.update(layer) next
+        
+        # Gradient Clipping (Optional)
+        aGrads = model.get_gradients()
+        tensor_clip_global_norm(aGrads, 1.0)
+        
+        model.update_weights(optimizer)
         
         epochLoss += loss
     next
@@ -138,7 +127,7 @@ next
 ```
 
 ### 4. Saving & Loading
-Switch to evaluation mode to disable Dropout, then save.
+Switch to evaluation mode to disable Dropout, then save using binary serialization.
 
 ```ring
 model.evaluate() 
@@ -151,11 +140,14 @@ model2 = new Sequential
 model2.loadWeights("mymodel.rdata")
 ```
 
-## 🧪 Included Examples
+---
 
-- **xor_train.ring:** Binary Classification.
-- **Chess_End_Game/:** A complete real-world project classifying chess game results (18 classes) from a CSV dataset.
-- **mnist_train.ring:** Computer Vision example for digit recognition.
+## 📂 Included Projects
+
+1.  **Project train translate bidir Adam2:** A complete Transformer-based translation engine (English <-> Arabic) and code generator.
+2.  **Chess End-Game:** Multi-class classification (18 classes).
+3.  **XOR:** The "Hello World" of Neural Networks.
+4.  **mnist_train.ring:** Computer Vision example for digit recognition.
 
 ## 📝 License
 

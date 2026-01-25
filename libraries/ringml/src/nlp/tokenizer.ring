@@ -1,176 +1,146 @@
-/*
-    Project: RingML (NLP Module)
-    File: tokenizer.ring
-    Author: Code Gear-1 (Agent)
-    Description: A character-level tokenizer for preparing text data for RingGPT/Adam.
-*/
+# Project: Jabr
+# File: src/utils/Tokenizer.ring
+# Author: Azzeddine Remmal
+# Description: A character-level tokenizer for preparing text data 
+#              High-Speed Tokenizer using AlQalam HashMap
+
+
 
 class Tokenizer
 
-    # Special Tokens
-    cPadToken   = "<PAD>"
-    cUnkToken   = "<UNK>"
-    cStartToken = "<START>"
-    cEndToken   = "<END>"
-
-    # Mappings
-    aVocab      = []        # List of characters/tokens
-    aTokenToId  = []        # List of [Token, ID] for lookups (Simulating Hash Map)
-    nVocabSize  = 0
-
-    func init
-        # Initialize with special tokens
-        addToken(cPadToken)
-        addToken(cUnkToken)
-        addToken(cStartToken)
-        addToken(cEndToken)
+    # --- Configuration ---
+    aSpecialTokens
+    nVocabSize
     
-    # --- Core Functionality ---
+    # --- The Engine (C++ HashMap) ---
+    oIndexMap      # QalamIndex (String -> ID)
+    
+    func init
+        oIndexMap      = new QalamIndex()
+        aSpecialTokens = []
+        nVocabSize     = 0
+        return self
+    
+    func addToken cToken
+        # Add to special tokens list
+        aSpecialTokens + cToken
+        # Add to Map
+        nVocabSize++
+        oIndexMap.define(cToken, nVocabSize)
 
-    func build_vocab aTextList
-        /*
-            Builds vocabulary from a list of strings.
-            Currently implements Character-Level tokenization.
-        */
-        see "Building vocabulary from " + len(aTextList) + " samples..." + nl
+    func buildVocab aTextList
+        see "[Tokenizer] Building Vocabulary (Accelerated)..." + nl
         
-        # Using a simple list check for uniqueness (O(N^2) but fine for char-level)
-        # For word-level, we would need a more optimized hash-map approach in C or clever Ring lists.
+        # Process Text
+        # Assuming Character Level for now (or Word Level if split)
+        # Using a Ring List loop is fine here because 'setKey' is fast
         
         for cText in aTextList
             nLen = len(cText)
             for i = 1 to nLen
                 cChar = cText[i]
-                if not isTokenInVocab(cChar)
-                    addToken(cChar)
+                
+                # Check if exists (Fast O(1) Check)
+                nId = oIndexMap.recall(cChar)
+                
+                if nId = 0 # Not found (0.0 from C++)
+                    nVocabSize++
+                    oIndexMap.define(cChar, nVocabSize)
                 ok
             next
         next
         
-        see "Vocabulary built. Size: " + nVocabSize + nl
-    
+        see "    Final Vocab Size: " + nVocabSize + nl
+
     func encode cText
-        /*
-            Converts a string to a list of integers (IDs).
-            Adds <START> and <END> tokens automatically.
-        */
-        aIds = []
+    aIds = []
+    nPos = 1
+    nLen = len(cText)
+
+    while nPos <= nLen
+        bFoundTag = false
         
-        # Add Start Token
-        aIds + getTokenId(cStartToken)
-        
-        nLen = len(cText)
-        for i = 1 to nLen
-            cChar = cText[i]
-            nId = getTokenId(cChar)
-            aIds + nId
+        # 1. Try matching the special tags first
+        for cTag in aSpecialTokens
+            nTagLen = len(cTag)
+            if substr(cText, nPos, nTagLen) = cTag
+                aIds + oIndexMap.recall(cTag)
+                nPos += nTagLen
+                bFoundTag = true
+                exit # Exit tag matching loop
+            ok
         next
+
+        if bFoundTag loop ok
+
+        nCharLen = 1
+        cChar = substr(cText, nPos, nCharLen)
+        nId = oIndexMap.recall(cChar)
         
-        # Add End Token
-        aIds + getTokenId(cEndToken)
+        if nId = 0 
+            aIds + 2 # <UNK>
+        else 
+            aIds + nId 
+        ok
         
-        return aIds
+        nPos += nCharLen
+    end
+    return aIds
 
     func decode aIds
-        /*
-            Converts a list of integers back to a string.
-            Ignores special tokens during reconstruction.
-        */
-        cText = ""
-        for nId in aIds
-            cToken = getTokenFromId(nId)
-            
-            # Skip special tokens in output
-            if cToken = cPadToken or cToken = cStartToken or cToken = cEndToken or cToken = cUnkToken
-                loop
-            ok
-            
-            cText += cToken
-        next
-        return cText
-
-    # --- Helper Functions ---
-
-    func addToken cToken
-        aVocab + cToken
-        aTokenToId + [cToken, len(aVocab)] # 1-based index
-        nVocabSize = len(aVocab)
-
-    func isTokenInVocab cToken
-        # Linear search (Optimization needed for large vocab)
-        for item in aTokenToId
-            if item[1] = cToken
-                return true
+        cStr = ""
+        for id in aIds
+            # Check bounds
+            if id > 0 and id <= oIndexMap.size()
+                cToken = oIndexMap.recallKey(id)
+                
+                # Skip Special Tokens logic (Optional)
+                //if cToken = "<PAD>" loop ok
+                //if cToken = "<UNK>" cToken = " " ok
+                cStr += cToken
             ok
         next
-        return false
+        return cStr
 
     func getTokenId cToken
-        for item in aTokenToId
-            if item[1] = cToken
-                return item[2]
-            ok
-        next
-        return getTokenId(cUnkToken) # Return UNK if not found
+        nId = oIndexMap.recall(cToken)
+        if nId = 0 return 2 ok # Return UNK
+        return nId
 
     func getTokenFromId nId
-        if nId > 0 and nId <= nVocabSize
-            return aVocab[nId]
+        if nId > 0 and nId <= oIndexMap.size()
+            return oIndexMap.recallKey(nId)
         ok
-        return cUnkToken
-
-    # --- Persistence ---
-
+        return "<UNK>"
+    /*
+        Function: saveVocab
+        Description: Persists the vocabulary list to disk.
+                     We save the Reverse List (ID -> String) because it contains all info needed.
+    */
     func saveVocab cFilePath
-        /*
-            Saves the vocabulary to a file.
-            Format: Token|ID per line.
-        */
-        cContent = ""
-        for item in aTokenToId
-            cContent += item[1] + "|" + item[2] + nl
-        next
-        write(cFilePath, cContent)
-        see "Vocabulary saved to: " + cFilePath + nl
+        # Serialization: Convert list to Ring code string
+        oIndexMap.saveBinary(cFilePath)
 
+    /*
+        Function: loadVocab
+        Description: Loads vocabulary from disk and rebuilds the High-Speed C++ Index.
+    */
     func loadVocab cFilePath
-        if not fexists(cFilePath)
-            see "Error: Vocabulary file not found: " + cFilePath + nl
-            return
-        ok
+        if !fexists(cFilePath) raise("Tokenizer: File not found -> " + cFilePath) ok
         
-        cContent = read(cFilePath)
-        aLines = str2list(cContent)
+        # Load the List (Ring Level)
+        oIndexMap.loadBinary(cFilePath)
         
-        # Reset current vocab
-        aVocab = []
-        aTokenToId = []
-        nVocabSize = 0
+        # Rebuild the C++ Hash Map (The Engine)
+        # We must re-populate AlQalam to get O(1) speed back
         
-        for cLine in aLines
-            if len(trim(cLine)) = 0 loop ok
-            
-            # Simple parsing assuming | separator
-            # Note: This is fragile if tokens contain |. 
-            # For char-level it's mostly fine unless '|' is a char.
-            # A more robust solution would be JSON or length-prefixed.
-            
-            # Quick fix for '|' character itself:
-            if left(cLine, 2) = "||" 
-                cToken = "|"
-                nId = number(substr(cLine, 3))
-            else
-                nPos = substr(cLine, "|")
-                if nPos > 0
-                    cToken = left(cLine, nPos-1)
-                    nId = number(right(cLine, len(cLine)-nPos))
-                else
-                    loop # Skip malformed
-                ok
-            ok
-            
-            aVocab + cToken
-            aTokenToId + [cToken, nId]
+        nVocabSize = oIndexMap.size()
+        
+        # Re-indexing loop
+        for i = 1 to nVocabSize
+            cToken = oIndexMap.recallKey(i)
+            # ID is simply the index i
+            oIndexMap.define(cToken, i)
         next
-        nVocabSize = len(aVocab)
-        see "Vocabulary loaded. Size: " + nVocabSize + nl
+
+
