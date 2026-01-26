@@ -4,7 +4,7 @@
 
 The library offers a PyTorch-like API, adhering to **Jacob's Law** by providing a familiar interface. It has evolved from simple MLPs to supporting state-of-the-art **Transformer Architectures (GPT/BERT)**.
 
-**Current Version:** 1.2.0 
+**Current Version:** 1.2.1
 
 ## 📦 Installation
 

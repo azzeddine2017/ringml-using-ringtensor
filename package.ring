@@ -5,11 +5,11 @@ aPackageInfo = [
 	:developer = "Azzeddine Remmal",
 	:email = "azzeddine.remmal@gmail.com",
 	:license = "MIT License",
-	:version = "1.2.0",
+	:version = "1.2.1",
 	:ringversion = "1.25",
 	:versions = 	[
 		[
-			:version = "1.2.0",
+			:version = "1.2.1",
 			:branch = "master"
 		]
 	],
@@ -48,6 +48,7 @@ aPackageInfo = [
 	:ringfolderfiles = 	[
 		"bin/load/ringml.ring",
 		"libraries/ringml/project_documents/Performance Optimization Report.txt",
+		"libraries/ringml/project_documents/ringtensor-113-technical-report.md",
 		"libraries/ringml/README.md",
 		"libraries/ringml/src/core/tensor.ring",
 		"libraries/ringml/src/data/BatchDataLoader.ring",
