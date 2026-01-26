@@ -208,3 +208,12 @@ func calcListNorm aList
 func calcSingleNorm pPtr
     return sqrt(tensor_sum_squares(pPtr))
     
+#===================================================================================
+# Function: set_gpu_threshold
+# Description: Sets the minimum number of operations required to trigger GPU.
+# Default: 5000000
+# Lower it if you have a powerful discrete GPU.
+# Raise it if you have a weak integrated GPU with slow shared memory.
+#===================================================================================
+func setGpuThreshold nOps
+    tensor_set_gpu_threshold(nOps)    

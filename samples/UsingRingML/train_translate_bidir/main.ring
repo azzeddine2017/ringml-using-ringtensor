@@ -9,6 +9,7 @@ load "BiDirectionalDataset.ring"
 
 see "num cores :" + tensor_get_cores()
 tensor_set_threads(2)
+setGpuThreshold(5000000)
 
 decimals(8)
 
