@@ -5,11 +5,11 @@ aPackageInfo = [
 	:developer = "Azzeddine Remmal",
 	:email = "azzeddine.remmal@gmail.com",
 	:license = "MIT License",
-	:version = "1.2.2",
+	:version = "1.2.3",
 	:ringversion = "1.25",
 	:versions = 	[
 		[
-			:version = "1.2.2",
+			:version = "1.2.3",
 			:branch = "master"
 		]
 	],
@@ -21,7 +21,7 @@ aPackageInfo = [
 		],
 		[
 			:name = "ringtensor",
-			:version = "1.3.1",
+			:version = "1.3.2",
 			:providerusername = ""
 		],
 		[
@@ -43,6 +43,8 @@ aPackageInfo = [
 	:files = 	[
 		"main.ring",
 		"README.md",
+		"CHANGELOG.md",
+		"CONTRIBUTING.md",
 		"setup.ring"
 	],
 	:ringfolderfiles = 	[
@@ -157,6 +159,12 @@ aPackageInfo = [
 		"samples/UsingRingML/Visual_test_model.rdata",
 		"samples/UsingRingML/xor_train.ring",
 		"samples/UsingRingML/xor_weights.rdata",
+		"docs/API_REFERENCE.md",
+		"docs/ARCHITECTURE.md",
+		"docs/CHANGELOG.md",
+		"docs/GETTING_STARTED.md",
+		"docs/PERFORMANCE.md",
+		"docs/TROUBLESHOOTING.md"
 	],
 	:windowsfiles = 	[
 
