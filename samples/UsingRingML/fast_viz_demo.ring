@@ -59,7 +59,7 @@ model.summary()
 
 # 5. Training
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.001) 
+optimizer = new Adam(0.001, 0.0001) 
 nEpochs   = 20
 
 # Load Visualizer
