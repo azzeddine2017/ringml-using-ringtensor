@@ -9,7 +9,7 @@ class SGD
     func init nLR
         lr = nLR
         nLearningRate = nLR
-    ok
+    
 
     func update oLayer
         if hasAttribute(oLayer, "bTrainable") 
