@@ -6,7 +6,7 @@ load "ringml.ring"
 load "chess_utils.ring"
 load "chess_dataset.ring"
 
-
+tensor_set_threads(2)
 decimals(4)
 
 see "=== RingML Chess Training (Lite CPU Mode) ===" + nl
@@ -36,8 +36,8 @@ if len(aRawsData) > nLiteSize
     
     # Pick first 5000
     for i = 1 to nLiteSize
-        # FIX: Use add() instead of (+) to preserve row structure
-        add(aLiteData, aRawsData[i])
+       
+        aLiteData + aRawsData[i]
     next
     aRawsData = aLiteData
     see "Reduced dataset to " + nLiteSize + " samples for speed." + nl
@@ -52,7 +52,7 @@ aTest  = sets[2]
 
 # --- OPTIMIZATION 2: Large Batch Size ---
 # Less updates = Less overhead
-batch_size = 128
+batch_size = 64
 
 trainDataset = new ChessDataset(aTrain)
 testDataset  = new ChessDataset(aTest)
@@ -66,19 +66,21 @@ model = new Sequential
 
 # Input -> Dense(50) -> Tanh -> Dense(30) -> Output
 # Smaller layers = Much faster Matrix Multiplication
-model.add(new Dense(6, 50))   
+model.add(new Dense(6, 64))   
 model.add(new Tanh)        
-model.add(new Dense(50, 30))  
+model.add(new Dense(64, 32))  
 model.add(new Tanh)
-model.add(new Dense(30, nClasses)) 
-model.add(new Softmax)
+model.add(new Dense(32, 16))  
+model.add(new Tanh)
+model.add(new Dense(16, nClasses)) 
+//model.add(new Softmax)
 
 model.summary()
 
 # 4. Training
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.001) 
-nEpochs   = 20 # 20 Epochs should finish quickly now
+optimizer = new Adam(0.0001, 0.0001) 
+nEpochs   = 50 # 50 Epochs should finish quickly now
 
 viz = new TrainingVisualizer(nEpochs, trainLoader.nBatches)
 
@@ -100,7 +102,7 @@ for epoch = 1 to nEpochs
         loss  = criterion.forward(preds, targets)
         epochLoss += loss
         
-        grad = criterion.backward(preds, targets)
+        grad = criterion.backwardTensor() 
         model.backward(grad)
         
         for layer in model.getLayers() optimizer.update(layer) next
@@ -129,14 +131,12 @@ for epoch = 1 to nEpochs
             # Simple ArgMax
             pMax = -1000 pIdx=0
             for k=1 to nClasses 
-                # FIX: Use getVal() for C-Pointer based Tensors
                 val = preds.getVal(i, k)
                 if val > pMax pMax=val pIdx=k ok 
             next
             
             tMax = -1000 tIdx=0
             for k=1 to nClasses 
-                # FIX: Use getVal() for C-Pointer based Tensors
                 val = targets.getVal(i, k)
                 if val > tMax tMax=val tIdx=k ok 
             next

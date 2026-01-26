@@ -68,7 +68,7 @@ model.summary()
 
 # 5. Training Setup
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.01) 
+oOptimizer = new Adam(0.001, 0.0001) 
 nEpochs   = 50
 
 # --- SETUP VISUALIZER ---
@@ -95,7 +95,7 @@ for epoch = 1 to nEpochs
         grad = criterion.backward(preds, targets)
         model.backward(grad)
         
-        for layer in model.getLayers() optimizer.update(layer) next
+        for layer in model.getLayers() oOptimizer.update(layer) next
         
         # --- UPDATE VISUALIZER ---
         if b % 5 = 0 viz.update(epoch, b, loss, 0) ok

@@ -58,13 +58,13 @@ model.add(new Tanh)
 model.add(new Dropout(0.2))
 
 model.add(new Dense(32, nClasses)) 
-model.add(new Softmax)
+//model.add(new Softmax)
 
 model.summary()
 
 # 5. Training Setup
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.01) 
+optimizer = new Adam(0.001, 0.0001) 
 nEpochs   = 10
 
 # --- SETUP VISUALIZER ---
@@ -88,7 +88,7 @@ for epoch = 1 to nEpochs
         loss  = criterion.forward(preds, targets)
         trainLoss += loss
         
-        grad = criterion.backward(preds, targets)
+        grad = criterion.backwardTensor()//(preds, targets)
         model.backward(grad)
         
         for layer in model.getLayers() optimizer.update(layer) next

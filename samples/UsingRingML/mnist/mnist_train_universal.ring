@@ -5,8 +5,7 @@
 load "ringml.ring"             
 load "mnist_dataset.ring"
 
-
-see "num cores :" + tensor_get_cores()
+? "num cores :" + tensor_get_cores()
 tensor_set_threads(2)
 
 decimals(8)
@@ -49,13 +48,13 @@ model.add(new Dropout(0.2))
 
 # Output Layer
 model.add(new Dense(32, 10)) 
-//model.add(new Softmax)
+# model.add(new Softmax)
 
 model.summary()
 
 # 4. Training Setup
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.005,0.0001) # Adam
+oOptimizer = new Adam(0.001, 0.0001)
 nEpochs   = 50
 
 # --- SETUP VISUALIZER ---
@@ -79,10 +78,10 @@ for epoch = 1 to nEpochs
         loss  = criterion.forward(preds, targets)
         epochLoss += loss
         
-        grad = criterion.backward(preds, targets)
+        grad = criterion.backwardTensor()
         model.backward(grad)
         
-        for layer in model.getLayers() optimizer.update(layer) next
+        for layer in model.getLayers() oOptimizer.update(layer) next
 
         # Update Visualizer (Loss only)
         if b % 5 = 0 viz.update(epoch, b, loss, 0) ok

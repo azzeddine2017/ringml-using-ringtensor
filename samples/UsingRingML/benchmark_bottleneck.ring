@@ -40,10 +40,10 @@ model.add(new Softmax)
 model.summary()
 
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.001)
+optimizer = new Adam(0.001, 0.0001)
 
 # 3. Benchmark Loop
-nEpochs = 10
+nEpochs = 50
 see nl + "Running Benchmark for " + nEpochs + " epochs..." + nl
 see "Measuring average time per operation..." + nl
 

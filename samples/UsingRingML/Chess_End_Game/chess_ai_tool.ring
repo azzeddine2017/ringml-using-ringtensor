@@ -22,11 +22,11 @@ C_COLOR_PANEL       = "background-color: rgba(93, 97, 104, 1); border-radius: 8p
 see "Loading AI Model..." + nl
 oModel = new Sequential
 oModel.add(new Dense(6, 64))   
-oModel.add(new Tanh)        
+oModel.add(new ReLU)        
 oModel.add(new Dropout(0.2))
 
 oModel.add(new Dense(64, 32))  
-oModel.add(new Tanh)
+oModel.add(new ReLU)
 oModel.add(new Dropout(0.2))
 
 oModel.add(new Dense(32, 18)) 

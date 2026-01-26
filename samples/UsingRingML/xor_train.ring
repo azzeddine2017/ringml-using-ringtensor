@@ -41,7 +41,7 @@ model.add(new Sigmoid)
 
 # 3. Setup Loss and Optimizer
 criterion = new MSELoss
-optimizer = new SGD(0.5) # Increased LR for faster convergence with Sigmoid
+optimizer = new SGD(0.01) # Increased LR for faster convergence with Sigmoid
 
 # 4. Training Loop
 nEpochs = 5000

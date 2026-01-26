@@ -33,7 +33,7 @@ model.add(new Softmax)
 
 # 3. Training
 criterion = new CrossEntropyLoss
-optimizer = new SGD(0.5) 
+optimizer = new SGD(0.001) 
 
 see "Training..." + nl
 for epoch = 1 to 3000

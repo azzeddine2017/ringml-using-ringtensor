@@ -1,12 +1,13 @@
 # File: examples/chess_train_universal.ring
 # Description: Professional Training using UniversalDataset & DataSplitter
-# Author: Code Gear-1
+# Author: Azzeddine Remmal
 
 load "ringml.ring"
 load "chess_utils.ring"
 
 decimals(5)
-
+see info("num cores : " )  ? tensor_get_cores()
+tensor_set_threads(2)
 
 # ============================================================
 #           Main Execution
@@ -21,7 +22,7 @@ data.setSplit(0.2)          # 20% for Testing
 data.loadData()             # Run the pipeline
 
 # B. Create Loaders
-batch_size = 128
+batch_size = 64
 trainLoader = new DataLoader(data.getTrainDataset(), batch_size)
 testLoader  = new DataLoader(data.getTestDataset(), batch_size)
 
@@ -30,22 +31,23 @@ see "Batches/Epoch: " + trainLoader.nBatches + nl
 # C. Build Model (Optimized for Speed/Accuracy)
 model = new Sequential
 
-model.add(new Dense(6, 128))   
+model.add(new Dense(6, 64))   
 model.add(new Tanh)        
 model.add(new Dropout(0.2))
 
-model.add(new Dense(128, 64))   
+model.add(new Dense(64, 32))   
 model.add(new Tanh)        
 model.add(new Dropout(0.2))
 
-model.add(new Dense(64, 18)) 
-model.add(new Softmax)
+model.add(new Dense(32, 18)) 
+//model.add(new Softmax)
 
 model.summary()
 
 # D. Setup Training
 criterion = new CrossEntropyLoss
-optimizer = new Adam(0.0001) 
+optimizer = new Adam(0.001, 0.0001) 
+
 nEpochs   = 50
 
 # E. Visualization
@@ -69,7 +71,7 @@ for epoch = 1 to nEpochs
         preds = model.forward(inputs)
         loss  = criterion.forward(preds, targets)
         
-        grad = criterion.backward(preds, targets)
+        grad = criterion.backwardTensor()//(preds, targets)
         model.backward(grad)
         
         for l in model.getLayers() optimizer.update(l) next
