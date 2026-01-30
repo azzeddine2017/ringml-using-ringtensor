@@ -15,7 +15,11 @@ func main
     
     # --- Metadata ---
     printMeta("Library",   "RingML - Machine Learning Library for Ring")
+<<<<<<< HEAD
     printMeta("Version",   "1.2.4")
+=======
+    printMeta("Version",   "1.2.3")
+>>>>>>> 6b479f09548ef19dd18dd2cdf8ae03e58e4395a0
     printMeta("Developer", "Azzeddine Remmal")
     printMeta("License",   "MIT License")
     see nl
@@ -123,7 +127,11 @@ func RingMLInfo
 	
 	banner[:tEmptyLine3] = colorText([:text = "│                                               │", :color = :BRIGHT_BLUE])
 	
+<<<<<<< HEAD
 	versionStr = "Version 1.2.4"
+=======
+	versionStr = "Version 1.2.3"
+>>>>>>> 6b479f09548ef19dd18dd2cdf8ae03e58e4395a0
 	versionPad = floor((47 - len(versionStr)) / 2)
 	banner[:versionLine] = colorText([:text = "│" + space(versionPad), :color = :BRIGHT_BLUE]) + colorText([:text = versionStr, :color = :YELLOW, :style = :BOLD]) + colorText([:text = space(47-versionPad-len(versionStr)) + "│", :color = :BRIGHT_BLUE])
 	
