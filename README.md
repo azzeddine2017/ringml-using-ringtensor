@@ -1,9 +1,9 @@
 # 🧠 RingML: Deep Learning & Transformers for Ring
 
-[![Version](https://img.shields.io/badge/version-1.2.3-blue.svg)](https://github.com/Azzeddine2017/ringml-using-ringtensor)
+[![Version](https://img.shields.io/badge/version-1.2.4-blue.svg)](https://github.com/Azzeddine2017/ringml-using-ringtensor)
 [![Ring](https://img.shields.io/badge/Ring-1.25+-green.svg)](http://ring-lang.net)
 [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
-[![RingTensor](https://img.shields.io/badge/RingTensor-1.3.2+-red.svg)](https://github.com/Azzeddine2017/ringtensor)
+[![RingTensor](https://img.shields.io/badge/RingTensor-1.3.3+-red.svg)](https://github.com/Azzeddine2017/ringtensor)
 
 **RingML** is a high-performance, object-oriented Deep Learning framework built for the Ring programming language. It is powered by **RingTensor**, a custom C-extension designed to provide fast, double-precision matrix operations, fused optimizer kernels, and **Flash Attention** mechanisms.
 

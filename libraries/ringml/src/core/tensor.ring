@@ -423,21 +423,11 @@ class Tensor
         see nl
     
     func toList
-        aList = list(nRows)
-        for r=1 to nRows
-            aList[r] = list(nCols)
-            for c=1 to nCols
-                aList[r][c] = getVal(r,c)
-            next
-        next
-        return aList
+        return tensor_to_list(pData)
 
     func fromList aList
-        for r=1 to nRows
-            for c=1 to nCols
-                setVal(r,c, aList[r][c])
-            next
-        next
+        tensor_set_from_list(pData, aList)
+        return self
 
     func saveFile cFileName
         tensor_save(pData, cFileName)
