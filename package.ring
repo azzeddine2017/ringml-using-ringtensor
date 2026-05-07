@@ -161,7 +161,6 @@ aPackageInfo = [
 		"samples/UsingRingML/xor_weights.rdata",
 		"docs/API_REFERENCE.md",
 		"docs/ARCHITECTURE.md",
-		"docs/CHANGELOG.md",
 		"docs/GETTING_STARTED.md",
 		"docs/PERFORMANCE.md",
 		"docs/TROUBLESHOOTING.md"
