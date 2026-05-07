@@ -22,7 +22,7 @@ class Tensor
         self.nRows = nR
         self.nCols = nC
         if nR > 0 and nC > 0
-            pData = tensor_init(nR, nC)
+            self.pData = tensor_init(nR, nC)
         ok
         return self
     
@@ -142,7 +142,13 @@ class Tensor
             tensor_div(pData, oOther.pData)
             return self
         ok
+    func argmax
+        if bGraphMode
+            return returnGraphNode(RT_OP_ARGMAX, self, NULL, nRows, nCols)
+        ok
+        return tensor_argmax(pData)
 
+    
     func scalarMul nVal
         if bGraphMode
             return returnGraphNodeParam(RT_OP_SCALAR_MUL, self, NULL, nRows, nCols, nVal)
@@ -179,6 +185,14 @@ class Tensor
     func insertRows oSrcTensor, nStartRow
         tensor_insert_rows(pData, oSrcTensor.pData, nStartRow)
         return self
+
+    func dotRowVec oVector, oRes
+        if bGraphMode
+            return returnGraphNode(RT_OP_DOT_ROW_VEC, self, oVector, nRows, nCols)
+        ok
+        //oRes = new Tensor(nRows, nCols)
+        tensor_dot_row_vec(pData, oVector.pData, oRes.pData)
+        return oRes
 
     func repeatRows nTimes
         if bGraphMode
@@ -576,6 +590,10 @@ class Tensor
             pData = graph_get_output(nGraphNodeID)
             updateDimsFromC()
         ok
+        return self
+
+    func printStats
+        tensor_print_stats(pData)
         return self
 
 class Graph

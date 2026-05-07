@@ -216,4 +216,8 @@ func calcSingleNorm pPtr
 # Raise it if you have a weak integrated GPU with slow shared memory.
 #===================================================================================
 func setGpuThreshold nOps
-    tensor_set_gpu_threshold(nOps)    
+    tensor_set_gpu_threshold(nOps)  
+
+func isnan x
+    if isNumber(x) return x != x ok
+    return false      

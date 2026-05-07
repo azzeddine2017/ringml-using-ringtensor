@@ -25,7 +25,7 @@ class Tokenizer
         # Add to special tokens list
         aSpecialTokens + cToken
         # Add to Map
-        nVocabSize++
+        nVocabSize ++
         oIndexMap.define(cToken, nVocabSize)
 
     func buildVocab aTextList

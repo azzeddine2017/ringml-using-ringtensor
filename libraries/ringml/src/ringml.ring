@@ -12,10 +12,11 @@ load "AlQalam.ring"
 load "utils/Styler.ring"
 oStyl = new Styler()
 
-load "nlp/tokenizer.ring"
+//load "nlp/tokenizer.ring"
 
 load "utils/functions.ring"
 load "utils/visualizer.ring"
+load "utils/cleaner.ring"
 load "utils/RogueutilTransformerDashboard.ring"
 load "utils/GUI_dashboard.ring"
 load "utils/trainer.ring"

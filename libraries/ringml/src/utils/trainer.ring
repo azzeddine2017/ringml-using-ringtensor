@@ -81,7 +81,7 @@ class Trainer
 
             saveCheckpoint()
             
-            if !isnull(oTokenizer) generateDemo("Where do you live?") ok
+            if !isnull(oTokenizer) generateDemo("I'm old enough to vote.") ok //أنا كبير بما يكفي للتصويت.
         next
         
         oDashboard.finishTraining()
